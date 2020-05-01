@@ -90,20 +90,6 @@ def modify_transformer_cols(col_trnsfrmr: ColumnTransformer, append=False, **trn
     return new_col_trnsfrmr
 
 
-class DecisionTreeDiscretizer(BaseEstimator, ClassifierMixin, AutoFitTrans):
-    
-    def __init__(self, max_depth=2):
-        self.max_depth = max_depth
-        self.dt = DecisionTreeClassifier(max_depth=self.max_depth)
-        
-    def fit(self, X, y):
-        self.dt.fit(X, y)
-        return self
-        
-    def transform(self, X, y=None):
-        prob = self.dt.predict_proba(X)
-        return OneHotEncoder(drop='first').fit_transform(prob)
-
 
     
 class SimpleImputerDF(BaseEstimator, ClassifierMixin, AutoFitTrans):

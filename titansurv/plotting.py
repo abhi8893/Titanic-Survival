@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 # TODO: plot top n results for x
 # TODO: plot top n results for a specific ML model
@@ -43,5 +44,41 @@ def plot_grid_results(grid, x, kind='score'):
     
     g.figure.set_size_inches(12, 8)
     g.set_title(f'GridSearchCV crossvalidated {kind}', {'weight': 'bold', 'size': 20})
+    
+    return g
+
+
+
+def plot_count(series, dropna=False):
+    val_cnts = series.value_counts(dropna=dropna)
+    fig = plt.figure(figsize=(20, 1))
+    
+    if not dropna:
+        try:
+            series = series.fillna('NaN')
+        except ValueError: # fill value must be in category error
+            pass
+        
+    g = sns.countplot(y=series)
+    
+    print("The frequency of each category:\n", 
+          val_cnts, "\n", sep="")
+    print("The proportion of each category:\n", 
+          val_cnts/series.size, "\n", sep="")
+    
+    return g
+
+
+
+def plot_prob(x, y, data=None):
+    if data is None:
+        data = pd.concat([x, y], axis=1)
+        x, y = data.columns
+        data = data.dropna()
+    
+    
+    g = sns.catplot(x, y, kind='bar', data=data)
+    g.despine(left=True)
+    g.set_ylabels(f'{y} probability')
     
     return g
