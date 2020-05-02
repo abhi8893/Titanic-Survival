@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "/home/abhi/miniconda3/envs/titansurv/bin/python"
+    "python.pythonPath": "/home/abhi/miniconda3/envs/titansurv/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
