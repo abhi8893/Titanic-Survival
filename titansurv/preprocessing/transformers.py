@@ -1,8 +1,8 @@
-from copy import deepcopy
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import clone
 
 
 class AutoFitTrans:
@@ -70,11 +70,17 @@ class NaNDropper(BaseEstimator, ClassifierMixin, AutoFitTrans):
 #     def fit_transform(self, X, y=None):
 #         return self.fit(X, y).transform(X, y)
 
+def __convert_to_list(obj):
+    if not isinstance(obj, list):
+        return [obj]
 
 
 
-def modify_transformer_cols(col_trnsfrmr: ColumnTransformer, append=False, **trnsfrmr_cols):
-    new_col_trnsfrmr = deepcopy(col_trnsfrmr)
+
+def modify_transformer_cols(col_trnsfrmr: ColumnTransformer, append=False, inplace=False, **trnsfrmr_cols):
+    if not inplace:
+        new_col_trnsfrmr = clone(col_trnsfrmr)
+
     trnsfrmrs = new_col_trnsfrmr.transformers
     for i, [trnsfrmr_name, old_trnsfrmr, old_cols] in enumerate(trnsfrmrs):
         new_cols = trnsfrmr_cols.get(trnsfrmr_name, None)
@@ -88,6 +94,33 @@ def modify_transformer_cols(col_trnsfrmr: ColumnTransformer, append=False, **trn
         trnsfrmrs[i] = (trnsfrmr_name, old_trnsfrmr, new_cols)
         
     return new_col_trnsfrmr
+
+
+def modify_transformer_est(col_trnsfrmr: ColumnTransformer, inplace=False, **trnsfrmr_estmtrs):
+    if not inplace:
+        new_col_trnsfrmr = clone(col_trnsfrmr)
+
+    trnsfrmrs = new_col_trnsfrmr.transformers
+    for i, [trnsfrmr_name, old_trnsfrmr, old_cols] in enumerate(trnsfrmrs):
+        new_trnsfrmr = trnsfrmr_estmtrs.get(trnsfrmr_name, old_trnsfrmr)
+
+        trnsfrmrs[i] = (trnsfrmr_name, new_trnsfrmr, old_cols)
+
+
+    return new_col_trnsfrmr
+
+
+def remove_transformer_by_name(col_trnsfrmr: ColumnTransformer, names: list, inplace=False):
+    if not inplace:
+        new_col_trnsfrmr = clone(col_trnsfrmr)
+
+    trnsfrmrs = new_col_trnsfrmr.transformers
+    for i, [trnsfrmr_name, old_trnsfrmr, old_cols] in enumerate(trnsfrmrs):
+        if trnsfrmr_name in names:
+            trnsfrmrs.pop(i)
+
+    return new_col_trnsfrmr
+    
 
 
 
@@ -111,3 +144,6 @@ class SimpleImputerDF(BaseEstimator, ClassifierMixin, AutoFitTrans):
         sel_cols = list(set(X.columns) & set(self.keys))
         X.loc[:, sel_cols] = X.loc[:, sel_cols].apply(lambda c: c.fillna(self.fill_value[c.name]), axis=0)
         return X
+
+
+from sklearn.ensemble import StackingClassifier

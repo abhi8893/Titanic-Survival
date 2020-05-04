@@ -82,3 +82,12 @@ def plot_prob(x, y, data=None):
     g.set_ylabels(f'{y} probability')
     
     return g
+
+
+def plot_missprop(df):
+    miss_prop = df.isna().mean()
+    fig, ax = plt.subplots(figsize=(12, 8))
+    miss_prop.plot(kind="bar", ax=ax)
+    ax.set_title("Missing Proportions", fontdict=dict(size=20, weight="bold"))
+    
+    return(miss_prop)
