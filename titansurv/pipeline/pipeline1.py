@@ -13,7 +13,7 @@ prepare_data = Pipeline([
     ('nan_drpr', NaNDropper(['Embarked']))
 ])
 
-pre2 = Pipeline([
+imp_scale = Pipeline([
     ('imp', SimpleImputer()),
     ('scaler', StandardScaler())
 ], 'passthrough')
@@ -51,7 +51,8 @@ pre_Parch = Pipeline([
 
 preprocess_data = ColumnTransformer([
     ('enc', OneHotEncoder(drop='first'), ['Sex', 'Embarked']),
-    ('imp_scaler', pre2, ['Age', 'Fare']),
+    ('imp_scaler', imp_scale, ['Age']),
+    ('scaler', StandardScaler(), ['Fare']),
     ('pre_Name', pre_Name, 'Name'),
     ('pre_Cabin', pre_Cabin, 'Cabin'),
     ('pre_Ticket', pre_Ticket, 'Ticket'),
@@ -88,4 +89,5 @@ pipeline1 = DataPipeline(
     prepare_data, 
     preprocess_data, 
     mlmodel, 
-    description=description)
+    description=description,
+    ycol='Survived')
