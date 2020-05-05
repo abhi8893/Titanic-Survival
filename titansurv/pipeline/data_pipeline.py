@@ -24,6 +24,7 @@ class DataPipeline(Pipeline):
         self.__prepare_data = prepare_data
         self._is_prepared = False
         self.__preprocess_data = preprocess_data
+        self._is_preprocessed = False
         self.__mlmodel = mlmodel
         self.__data = data
         self.ycol = ycol
@@ -141,8 +142,12 @@ class DataPipeline(Pipeline):
         if not self._is_prepared:
             raise DataNotPreparedError('Please prepare the data first using the prepare method!')
 
+        if self._is_preprocessed:
+            return self.preprocessed
+        
         self.preprocessed = self.preprocess_data.fit_transform(self.X, self.y, *args, **kwargs)
         self._is_preprocessed = True
+
         return self.preprocessed
 
     def train_mlmodel(self, *args, **kwargs):
@@ -176,6 +181,7 @@ class DataPipeline(Pipeline):
             fit = super().fit(X, y, *args, **kwargs)
         
         self._is_fitted = True
+        self.train_score = None
 
         return fit
         
@@ -183,7 +189,7 @@ class DataPipeline(Pipeline):
     def score(self, X=None, y=None, *args, **kwargs):
         if X is None and y is None:
             self._check_dp_is_fitted()
-            if not hasattr(self, "train_score"):
+            if self.train_score is None:
                 self.train_score = super().score(self.X, self.y, *args, **kwargs)
                 return self.train_score
         else:
@@ -203,12 +209,8 @@ class DataPipeline(Pipeline):
     def get_params(self, *args, **kwargs):
         out = super().get_params(*args, **kwargs)
         return self.__remove_duplicate_params(out)
+    
         
-
-
-
-
-
 
 
     

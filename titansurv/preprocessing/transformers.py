@@ -146,4 +146,17 @@ class SimpleImputerDF(BaseEstimator, ClassifierMixin, AutoFitTrans):
         return X
 
 
-from sklearn.ensemble import StackingClassifier
+
+class Passthrough(BaseEstimator):
+    
+    def __init__(self):
+        pass
+    
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X, y=None):
+        return X
+    
+    def fit_transform(self, X, y=None):
+        return self.fit(X, y).transform(X, y)
