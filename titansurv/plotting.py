@@ -51,7 +51,7 @@ def plot_grid_results(grid, x, kind='score'):
 
 def plot_count(series, dropna=False):
     val_cnts = series.value_counts(dropna=dropna)
-    fig = plt.figure(figsize=(20, 1))
+    plt.figure(figsize=(20, 1))
     
     if not dropna:
         try:
