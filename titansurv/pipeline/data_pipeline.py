@@ -17,7 +17,7 @@ class DataPipelineNotFittedError(Exception):
 
 class DataPipeline(Pipeline):
 
-    def __init__(self, prepare_data, preprocess_data, mlmodel, data=None, ycol=None, description=None):
+    def __init__(self, prepare_data, preprocess_data, mlmodel, data=None, ycol=None, description=None, warn=False):
 
         # BUG: Cloning the estimators either prepare_data, preprocess_data, mlmodel
         #      raises RunTimeError while cloning DataPipeline object
@@ -29,6 +29,7 @@ class DataPipeline(Pipeline):
         self.__data = data
         self.ycol = ycol
         self.description = description
+        self.__warn = warn
         
 
         self.__transformers = [
@@ -39,8 +40,12 @@ class DataPipeline(Pipeline):
         super().__init__(self.__transformers)
         self._is_fitted = False
 
-        if data is None:
+        if data is None and self.__warn:
             warnings.warn('Please set the data first using set_data method!')
+
+    @property
+    def warn(self):
+        return self.__warn
     
 
 
@@ -209,6 +214,10 @@ class DataPipeline(Pipeline):
     def get_params(self, *args, **kwargs):
         out = super().get_params(*args, **kwargs)
         return self.__remove_duplicate_params(out)
+
+    def set_warning(self, state):
+        self.__warning = state
+        print(f"Warning set to {state}")
     
         
 
