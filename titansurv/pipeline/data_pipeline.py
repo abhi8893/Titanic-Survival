@@ -218,8 +218,7 @@ class DataPipeline(Pipeline):
     def set_warning(self, state):
         self.__warning = state
         print(f"Warning set to {state}")
-    
-        
+            
 
 
     

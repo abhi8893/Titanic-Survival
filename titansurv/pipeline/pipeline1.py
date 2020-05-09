@@ -6,7 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-from ..preprocessing.transformers import NaNDropper
+from ..preprocessing import NaNDropper
 
 
 prepare_data = Pipeline([

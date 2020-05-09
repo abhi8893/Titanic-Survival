@@ -1,10 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
-
-
-
-
 class DecisionTreeDiscretizer(DecisionTreeClassifier):
     
     def __init__(self,

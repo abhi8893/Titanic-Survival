@@ -1,4 +1,4 @@
-from ..preprocessing.transformers import NaNDropper
+from ..preprocessing import NaNDropper
 from sklearn.pipeline import Pipeline
 
 drop_NA_Embarked = Pipeline([
