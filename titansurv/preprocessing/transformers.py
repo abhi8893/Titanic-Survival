@@ -1,8 +1,8 @@
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.base import clone
+from sklearn.base import clone, BaseEstimator, TransformerMixin
+
 
 
 class AutoFitTrans:
@@ -20,7 +20,7 @@ class AutoFitTrans:
         return self.fit(*args, **kwargs).transform(*args, **kwargs)
         
 
-class ColumnDropper(BaseEstimator, ClassifierMixin):
+class ColumnDropper(BaseEstimator, TransformerMixin):
     
     def __init__(self, key):
         self.key = key
@@ -34,7 +34,7 @@ class ColumnDropper(BaseEstimator, ClassifierMixin):
 
 # TODO: Can I implement this to support both dataframes and arrays?
 # TODO: Implement key='auto' to drop all NaNs
-class NaNDropper(BaseEstimator, ClassifierMixin, AutoFitTrans):
+class NaNDropper(BaseEstimator, AutoFitTrans):
     
     '''Drops rows with NaN values
     
@@ -70,10 +70,47 @@ class NaNDropper(BaseEstimator, ClassifierMixin, AutoFitTrans):
 #     def fit_transform(self, X, y=None):
 #         return self.fit(X, y).transform(X, y)
 
+    
+class SimpleImputerDF(BaseEstimator, TransformerMixin, AutoFitTrans):
+    
+    def __init__(self, keys, strategy='mean', fill_value=None):
+        self.keys = keys
+        self.strategy = strategy
+        self.fill_value = fill_value
+        
+    
+    def fit(self, X, y=None):
+        if self.fill_value is not None:
+            self.fill_value = X.loc[:, self.keys].agg(self.strategy)
+            
+        return self
+            
+            
+    def transform(self, X, y=None):
+        sel_cols = list(set(X.columns) & set(self.keys))
+        X.loc[:, sel_cols] = X.loc[:, sel_cols].apply(lambda c: c.fillna(self.fill_value[c.name]), axis=0)
+        return X
+
+
+
+class Passthrough(BaseEstimator, TransformerMixin):
+    
+    def __init__(self):
+        pass
+    
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X, y=None):
+        return X
+    
+    def fit_transform(self, X, y=None):
+        return self.fit(X, y).transform(X, y)
+
+
 def __convert_to_list(obj):
     if not isinstance(obj, list):
         return [obj]
-
 
 
 
@@ -120,43 +157,3 @@ def remove_transformer_by_name(col_trnsfrmr: ColumnTransformer, names: list, inp
             trnsfrmrs.pop(i)
 
     return new_col_trnsfrmr
-    
-
-
-
-    
-class SimpleImputerDF(BaseEstimator, ClassifierMixin, AutoFitTrans):
-    
-    def __init__(self, keys, strategy='mean', fill_value=None):
-        self.keys = keys
-        self.strategy = strategy
-        self.fill_value = fill_value
-        
-    
-    def fit(self, X, y=None):
-        if self.fill_value is not None:
-            self.fill_value = X.loc[:, self.keys].agg(self.strategy)
-            
-        return self
-            
-            
-    def transform(self, X, y=None):
-        sel_cols = list(set(X.columns) & set(self.keys))
-        X.loc[:, sel_cols] = X.loc[:, sel_cols].apply(lambda c: c.fillna(self.fill_value[c.name]), axis=0)
-        return X
-
-
-
-class Passthrough(BaseEstimator):
-    
-    def __init__(self):
-        pass
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def transform(self, X, y=None):
-        return X
-    
-    def fit_transform(self, X, y=None):
-        return self.fit(X, y).transform(X, y)

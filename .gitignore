@@ -2,3 +2,12 @@
 __pycache__/
 *.py[cod]
 passthrough
+bin
+develop-eggs
+dist
+eggs
+parts
+*.egg-info
+lib
+lib64
+build
