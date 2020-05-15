@@ -1,0 +1,4 @@
+datapipe,mlmodels,search_type
+dp1,['KNeighborsClassifier'],rand
+dp1,"['KNeighborsClassifier', 'LogisticRegression_l1l2']",rand
+dp1,['RandomForestClassifier'],rand

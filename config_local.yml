@@ -1,0 +1,13 @@
+
+PROJECT_DIR : '/home/abhi/main/coding/Python-code/mygit/Titanic-Survival'
+
+IS_RELATIVE:
+  RAW_TRAIN_DATA_FILE : 'data/raw/train.csv'
+  RAW_TEST_DATA_FILE  : 'data/raw/test.csv'
+  SUBMISSION_DIR : 'data/submission'
+
+  MODELS_DIR : 'pickled/models'
+  SEARCH_DIR : 'pickled/search'
+  HYPERPARAMS_DIR : 'pickled/hyperparams'
+  HYPERPARAMS_MLMODEL_FILE: 'pickled/hyperparams/hyperparams_ml.pkl'
+  TUNING_MLMODEL_LOGFILE: 'logs/tuning_mlmodel.txt'
