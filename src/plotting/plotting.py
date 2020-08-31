@@ -153,3 +153,33 @@ def barplot_compare(df1, df2, clmns: list, nrow, ncol, keys=None, figsize=None, 
     
     return fig, axn
     
+
+def plot_param_effect_models(search, param_step, model_step='ml', labels=None):
+    res = pd.DataFrame(search.cv_results_)
+
+    res['ml_name'] = res[f'param_{model_step}'].apply(lambda x: x.__class__.__name__)
+        
+    param_col = f'param_{param_step}'
+    valid_idx = ~res[param_col].isna()
+    valid_res = res.loc[valid_idx, :]
+    index_best = valid_res.index[valid_res.rank_test_score.argmin()]
+
+    best_param = valid_res.loc[index_best, param_col]
+
+    order = (res.loc[res[f'param_{param_step}'] == best_param, :]
+             .sort_values('rank_test_score')['ml_name'].tolist())
+    
+    plt.figure(figsize=(12, 8))
+    g = sns.barplot(x='ml_name', y='mean_test_score', hue=f'param_{param_step}', order=order,
+                data=res)
+
+    g.set_xticklabels(g.get_xticklabels(), rotation=45)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    if labels is not None:
+        for t, l in zip(g.legend_.texts, labels): t.set_text(l)
+
+    
+    return g
+
+

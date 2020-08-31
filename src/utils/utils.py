@@ -115,6 +115,20 @@ def load_data(subset='train', return_X_y=False):
     return df
 
 
+from sklearn.model_selection import cross_val_score
+
+
+def get_training_cv_score(pipe, dfX, dfy, **kwargs):
+    print(f'Training score: {pipe.score(dfX, dfy)}')
+    print(f'crossvalidation score: {cross_val_score(pipe, dfX, dfy, **kwargs).mean()}')
+
+def get_best_param_score(search):
+    print(f'Best param: {search.best_params_}')
+    print(f'Best score: {search.best_score_}')
+
+
+
+
 
 
 

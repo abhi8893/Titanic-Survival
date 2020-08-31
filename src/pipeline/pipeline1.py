@@ -11,10 +11,18 @@ prepare_data = Pipeline([
     ('nan_drpr', NaNDropper(['Embarked']))
 ])
 
+
+imp_enc = Pipeline([
+    ('imp', SimpleImputer(strategy='most_frequent')),
+    ('enc', OneHotEncoder(drop='first'))
+])
+
+
 clmn_trnsfrm = ColumnTransformer([
     ('clmn_drp', 'drop', ['Name', 'Ticket', 'Cabin']),
-    ('enc', OneHotEncoder(drop='first'), ['Sex', 'Embarked']),
-    ('imp', SimpleImputer(), ['Age'])
+    ('enc', OneHotEncoder(drop='first'), ['Sex']),
+    ('imp_enc', imp_enc, ['Embarked']),
+    ('imp', SimpleImputer(), ['Age', 'Fare'])
 ], 'passthrough')
 
 
@@ -29,10 +37,11 @@ mlmodel = SVC()
 
 description = r'''
 1. Drop Name, Ticket - requires Feature Engineering
+2. Embarked: most_frequent imputation using SimpleImputer
 2. OneHotEncoder for Sex, Embarked
 3. Drop Cabin - requires Feature Engineering/(?And Not Imputation)
-4. Age : Applied Mean Imputation and Mean Normalization
-5. Drop NaN rows in Embarked
+4. Age : Applied Mean Imputation
+5. Fare : Applied Mean Imputation
 6. Applied StandardScaler at the end to all features
 
 MLmodel: SVC'''

@@ -14,15 +14,21 @@ prepare_data = Pipeline([
 ])
 
 
+imp_enc = Pipeline([
+    ('imp', SimpleImputer(strategy='most_frequent')),
+    ('enc', OneHotEncoder())
+])
+
 
 preprocess_noscale = ColumnTransformer([
-    ('enc', OneHotEncoder(drop='first'), ['Sex', 'Embarked']),
-    ('imp', SimpleImputer(), ['Age']),
+    ('enc', OneHotEncoder(drop='first'), ['Sex']),
+    ('imp_enc', imp_enc, ['Embarked']),
+    ('imp', SimpleImputer(), ['Age', 'Fare']),
     ('pre_Name', NameTitleExtractor(), 'Name'),
-    ('pre_Cabin', CabinTypeExtractor(), 'Cabin'),
+    ('cabin_type', CabinTypeExtractor(), 'Cabin'),
     ('pre_Ticket', TicketTypeExtractor(), 'Ticket'),
-    ('Pre_SibSp', SibSpBinner(), ['SibSp']),
-    ('Pre_Parch', ParchBinner(), ['Parch'])
+    ('pre_SibSp', SibSpBinner(), ['SibSp']),
+    ('pre_Parch', ParchBinner(), ['Parch']),
 ], 
     'passthrough')
 

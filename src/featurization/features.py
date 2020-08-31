@@ -52,3 +52,12 @@ def FE_Cabin(x):
     col1 = x.str[0].fillna('NC')
     return col1.values.reshape(-1, 1)
 
+
+from .utils import add_columns
+from sklearn.base import clone
+familySize = clone(add_columns)
+
+def get_feature_names(self):
+    return 'FamilySize'
+
+familySize.get_feature_names = get_feature_names
